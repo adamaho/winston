@@ -91,6 +91,10 @@ If you have an NVDIA GPU you can do the following `sudo ubuntu-drivers autoinsta
 
 ## Development
 
+### Install zip
+
+By default ubuntu server doesn't come with zip and unzip install. Run `sudo apt-get install zip unzip` to install.
+
 ### Configure Ghostyy Terminal
 
 Since ghostyy is kind of new we need to make sure the server has the TermInfo for it. You can copy this over with ssh. `infocmp -x xterm-ghostty | ssh adam@winston -- tic -x -`. The `tic` command on the server may give the warning `"<stdin>", line 2, col 31, terminal 'xterm-ghostty': older tic versions may treat the description field as an alias` which can be safely ignored.
@@ -135,3 +139,17 @@ You can test with `node -v`.
 
 You can test with `pnpm -v`
 
+### Install opencode 
+
+`pnpm install -g opencode-ai` then run opencode auth login to login to any of the providers.
+
+### Install Neovim
+
+The ubunutu apt version of neovim is quite out of date. So we need to install the app image manually.
+
+1. `curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz`
+2. `sudo rm -rf /opt/nvim`
+3. `sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz` 
+4. add `export PATH="$PATH:/opt/nvim-linux-x86_64/bin"` to the bottom of `~/.bashrc`
+5. confirm installation dir by running `which nvim`. It should return `/opt/nvim-linux-x86_64/bin/nvim` and then `nvim --version`. You should see something equal to or greater than `0.11`
+6. Open with `nvim`
