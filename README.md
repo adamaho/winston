@@ -89,6 +89,20 @@ If you have an NVDIA GPU you can do the following `sudo ubuntu-drivers autoinsta
 +-----------------------------------------------------------------------------------------+
 ```
 
+### Install C and Other C Like Libs
+
+In order for the full dev workflow to work we need to install c and adjecent c languages `sudo apt update && sudo apt install build-essential`.
+
+### Configure Stow
+
+Stow allows you to create a symlink between two directories. Super useful for when you want to work on dotfiles and saving to github.
+
+1. Install stow `sudo apt install stow`
+2. Pick the directory you want to stow the files. In my case I am using `~/github.com/adamaho/winston`
+3. From your chosen directory (`cd ~/github.com/adamaho/winston`) you can run `stow -R -v ~ .` to create the symlink
+
+So ideally, you create a folder structure that matches where you want the files to be stowed. So if you have a neovim config you can set them in `/home/.config/nvim`
+
 ## Development
 
 ### Install zip
@@ -143,7 +157,7 @@ You can test with `pnpm -v`
 
 `pnpm install -g opencode-ai` then run opencode auth login to login to any of the providers.
 
-### Install Neovim
+## Install Neovim
 
 The ubunutu apt version of neovim is quite out of date. So we need to install the app image manually.
 
@@ -153,3 +167,4 @@ The ubunutu apt version of neovim is quite out of date. So we need to install th
 4. add `export PATH="$PATH:/opt/nvim-linux-x86_64/bin"` to the bottom of `~/.bashrc`
 5. confirm installation dir by running `which nvim`. It should return `/opt/nvim-linux-x86_64/bin/nvim` and then `nvim --version`. You should see something equal to or greater than `0.11`
 6. Open with `nvim`
+
