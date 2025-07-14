@@ -98,10 +98,14 @@ In order for the full dev workflow to work we need to install c and adjecent c l
 Stow allows you to create a symlink between two directories. Super useful for when you want to work on dotfiles and saving to github.
 
 1. Install stow `sudo apt install stow`
-2. Pick the directory you want to stow the files. In my case I am using `~/github.com/adamaho/winston`
-3. From your chosen directory (`cd ~/github.com/adamaho/winston`) you can run `stow -R -v ~ .` to create the symlink
+2. Create a `home` directory in your dotfiles repo with the structure you want in your home directory
+3. From your dotfiles directory (`cd ~/github.com/adamaho/winston`) you can run `stow -R -v -t ~ home` to create the symlinks
 
-So ideally, you create a folder structure that matches where you want the files to be stowed. So if you have a neovim config you can set them in `/home/.config/nvim`
+For dotfiles (files starting with `.`), you have two options:
+- Use actual dotfile names: `home/.config/nvim/` 
+- Use `dot-` prefix with `--dotfiles` flag: `home/dot-config/nvim/` and run `stow --dotfiles -R -v -t ~ home`
+
+The `home` directory structure should mirror where you want files to appear in your home directory.
 
 ## Development
 
