@@ -10,3 +10,6 @@ vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
 
 vim.opt.signcolumn = "auto"
+vim.opt.ruler = false
+vim.opt.showcmd = false
+vim.opt.cmdheight = 0
