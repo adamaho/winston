@@ -93,6 +93,14 @@ If you have an NVDIA GPU you can do the following `sudo ubuntu-drivers autoinsta
 
 In order for the full dev workflow to work we need to install c and adjecent c languages `sudo apt update && sudo apt install build-essential`.
 
+### Install ripgrep
+
+ripgrep is a powerful fuzzy finding tool used by telescope in nvim. But it works independently of nvim.
+
+```
+sudo apt install ripgrep
+```
+
 ### Configure Stow
 
 Stow allows you to create a symlink between two directories. Super useful for when you want to work on dotfiles and saving to github.
