@@ -93,6 +93,12 @@ If you have an NVDIA GPU you can do the following `sudo ubuntu-drivers autoinsta
 
 In order for the full dev workflow to work we need to install c and adjecent c languages `sudo apt update && sudo apt install build-essential`.
 
+### Install zsh
+
+1. Install `sudo apt install zsh`
+2. Make it the default shell `chsh -s $(which zsh)`
+3. Logout of ssh session and log back in again and test with `echo $SHELL` which should return `/bin/zsh`
+
 ### Install ripgrep
 
 ripgrep is a powerful fuzzy finding tool used by telescope in nvim. But it works independently of nvim.
