@@ -1,0 +1,8 @@
+theme = catppuccin-mocha
+
+# cursor
+cursor-style = block
+shell-integration-features = no-cursor
+
+# font
+font-family = JetBrains Mono NL
