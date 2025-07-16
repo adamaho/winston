@@ -99,6 +99,12 @@ In order for the full dev workflow to work we need to install c and adjecent c l
 2. Make it the default shell `chsh -s $(which zsh)`
 3. Logout of ssh session and log back in again and test with `echo $SHELL` which should return `/bin/zsh`
 
+### Configure oh-my-zsh
+
+In order to get some of the fancy command line info like the current git branch, we need oh-my-zsh.
+
+1. Install `sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
+
 ### Install ripgrep
 
 ripgrep is a powerful fuzzy finding tool used by telescope in nvim. But it works independently of nvim.
