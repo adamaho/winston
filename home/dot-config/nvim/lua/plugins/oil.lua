@@ -4,17 +4,28 @@ return {
   lazy = false,
   config = function()
     local oil = require("oil")
-    oil.setup({ view_options = { show_hidden = true } })
+    oil.setup({
+      view_options = {
+        show_hidden = true
+      },
+      float = {
+        max_width = 30,
+        max_height = 40,
+        override = function(conf) 
+          conf.anchor = "NW"
+          conf.row = 1
+          conf.col = 1
+          return conf
+        end
+      },
+      keymaps = {
+        ["q"] = "actions.close"
+      }
+    })
     vim.keymap.set(
       "n",
       "<leader>fs",
-      function()
-        if vim.bo.filetype == "oil" then
-          oil.close()
-        else
-          oil.open_float()
-        end
-      end,
+      oil.open_float,
       { desc = "toggle file system" }
     )
   end,
