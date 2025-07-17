@@ -21,9 +21,9 @@ return {
       -- keymaps
       local opts = { noremap = true, silent = true, buffer = bufnr }
 
-      vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-      vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-      vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+      vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "go to definition" }))
+      vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "hover documentation" }))
+      vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "open code actions" }))
     end
 
     for _, server in ipairs(require("mason-lspconfig").get_installed_servers()) do
