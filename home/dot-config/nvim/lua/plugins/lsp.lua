@@ -10,7 +10,7 @@ return {
 		-- lsp
 		require("mason").setup()
 		require("mason-lspconfig").setup({
-			ensure_installed = { "lua_ls" },
+			ensure_installed = { "lua_ls", "vtsls", "cssls", "astro" },
 		})
 		require("mason-tool-installer").setup({
 			ensure_installed = { "stylua" },
@@ -46,5 +46,18 @@ return {
 				capabilities = capabilities,
 			})
 		end
+
+		lspconfig.vtsls.setup({
+			root_dir = lspconfig.util.root_pattern(
+				".git",
+				"pnpm-workspace.yaml",
+				"pnpm-lock.yaml",
+			),
+      experimental = {
+        completion = {
+          entriesLimit = 5
+        }
+      }
+		})
 	end,
 }
