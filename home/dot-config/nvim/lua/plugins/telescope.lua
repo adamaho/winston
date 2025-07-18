@@ -22,24 +22,13 @@ return {
 		-- keymaps
 		local opts = { noremap = true, silent = true }
 
-		vim.keymap.set(
-			"n",
-			"<leader>ff",
-			builtin.find_files,
-			vim.tbl_extend("force", opts, { desc = "find all files" })
-		)
-		vim.keymap.set("n", "<leader>fh", function()
-			builtin.find_files({ hidden = true })
-		end, vim.tbl_extend("force", opts, { desc = "find all files including hidden files" }))
+		-- stylua: ignore start
+		vim.keymap.set("n", "<leader>ff", builtin.find_files, vim.tbl_extend("force", opts, { desc = "find all files" }))
+		vim.keymap.set("n", "<leader>fh", function() builtin.find_files({ hidden = true }) end, vim.tbl_extend("force", opts, { desc = "find all files including hidden files" }))
 		vim.keymap.set("n", "<leader>fi", builtin.live_grep, vim.tbl_extend("force", opts, { desc = "find in files" }))
-		vim.keymap.set(
-			"n",
-			"<leader>fd",
-			builtin.diagnostics,
-			vim.tbl_extend("force", opts, { desc = "find diagnostics in workspace" })
+		vim.keymap.set("n", "<leader>fd", builtin.diagnostics, vim.tbl_extend("force", opts, { desc = "find diagnostics in workspace" })
 		)
-		vim.keymap.set("n", "<leader>fb", function()
-			builtin.diagnostics({ bufnr = 0 })
-		end, vim.tbl_extend("force", opts, { desc = "find diagnostics in current buffer" }))
+		vim.keymap.set("n", "<leader>fb", function() builtin.diagnostics({ bufnr = 0 }) end, vim.tbl_extend("force", opts, { desc = "find diagnostics in current buffer" }))
+		-- stylua: ignore end
 	end,
 }
