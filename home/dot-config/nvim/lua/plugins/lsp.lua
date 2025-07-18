@@ -25,20 +25,11 @@ return {
 
 			-- keymaps
 			local opts = { noremap = true, silent = true, buffer = bufnr }
-
-			vim.keymap.set(
-				"n",
-				"gd",
-				vim.lsp.buf.definition,
-				vim.tbl_extend("force", opts, { desc = "go to definition" })
-			)
+      -- stylua: ignore start
+			vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "go to definition" }))
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "hover documentation" }))
-			vim.keymap.set(
-				"n",
-				"<leader>ca",
-				vim.lsp.buf.code_action,
-				vim.tbl_extend("force", opts, { desc = "open code actions" })
-			)
+			vim.keymap.set("n","<leader>ca",vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "open code actions" }))
+			-- stylua ignore end
 		end
 
 		for _, server in ipairs(require("mason-lspconfig").get_installed_servers()) do
