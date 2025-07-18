@@ -19,7 +19,7 @@ return {
 		local lspconfig = require("lspconfig")
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-		local on_attach = function(client, bufnr)
+		local on_attach = function(_, bufnr)
 			vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
 			-- keymaps
@@ -48,16 +48,14 @@ return {
 		end
 
 		lspconfig.vtsls.setup({
-			root_dir = lspconfig.util.root_pattern(
-				".git",
-				"pnpm-workspace.yaml",
-				"pnpm-lock.yaml",
-			),
-      experimental = {
-        completion = {
-          entriesLimit = 5
-        }
-      }
+			on_attach = on_attach,
+			capabilities = capabilities,
+			root_dir = lspconfig.util.root_pattern(".git", "pnpm-workspace.yaml", "pnpm-lock.yaml"),
+			experimental = {
+				completion = {
+					entriesLimit = 5,
+				},
+			},
 		})
 	end,
 }
