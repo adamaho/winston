@@ -11,6 +11,7 @@ return {
 		require("mason").setup()
 		require("mason-lspconfig").setup({
 			ensure_installed = { "lua_ls", "vtsls", "cssls", "astro" },
+			automatic_enable = false,
 		})
 		require("mason-tool-installer").setup({
 			ensure_installed = { "stylua" },
@@ -41,7 +42,7 @@ return {
 		end
 
 		for _, server in ipairs(require("mason-lspconfig").get_installed_servers()) do
-			if server ~= "vtsls" then
+			if server == "vtsls" then
 				lspconfig.vtsls.setup({
 					on_attach = on_attach,
 					capabilities = capabilities,
