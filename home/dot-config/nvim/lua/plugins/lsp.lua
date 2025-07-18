@@ -41,21 +41,23 @@ return {
 		end
 
 		for _, server in ipairs(require("mason-lspconfig").get_installed_servers()) do
-			lspconfig[server].setup({
-				on_attach = on_attach,
-				capabilities = capabilities,
-			})
+			if server ~= "vtsls" then
+				lspconfig.vtsls.setup({
+					on_attach = on_attach,
+					capabilities = capabilities,
+					root_dir = lspconfig.util.root_pattern(".git", "pnpm-workspace.yaml", "pnpm-lock.yaml"),
+					experimental = {
+						completion = {
+							entriesLimit = 5,
+						},
+					},
+				})
+			else
+				lspconfig[server].setup({
+					on_attach = on_attach,
+					capabilities = capabilities,
+				})
+			end
 		end
-
-		lspconfig.vtsls.setup({
-			on_attach = on_attach,
-			capabilities = capabilities,
-			root_dir = lspconfig.util.root_pattern(".git", "pnpm-workspace.yaml", "pnpm-lock.yaml"),
-			experimental = {
-				completion = {
-					entriesLimit = 5,
-				},
-			},
-		})
 	end,
 }
