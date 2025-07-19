@@ -14,7 +14,7 @@ return {
 			automatic_enable = false,
 		})
 		require("mason-tool-installer").setup({
-			ensure_installed = { "stylua" },
+			ensure_installed = { "stylua", "prettierd" },
 		})
 
 		local lspconfig = require("lspconfig")
