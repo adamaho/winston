@@ -3,6 +3,8 @@ local opts = { noremap = true, silent = true }
 vim.g.mapleader = " "
 
 -- stylua: ignore start
+vim.keymap.set('n', '<Esc>', ':nohl<CR>')
+
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", vim.tbl_extend("force", opts, { desc = "move lines down" }))
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", vim.tbl_extend("force", opts, { desc = "move lines up" }))
 
