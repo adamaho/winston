@@ -99,6 +99,12 @@ In order for the full dev workflow to work we need to install c and adjecent c l
 2. Make it the default shell `chsh -s $(which zsh)`
 3. Logout of ssh session and log back in again and test with `echo $SHELL` which should return `/bin/zsh`
 
+### Install oh-my-zsh
+
+In order to get some of the fancy command line info like the current git branch, we need oh-my-zsh.
+
+1. Install `sh -c "$(wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -O -)"`
+
 ### Configure Stow
 
 Stow allows you to create a symlink between two directories. Super useful for when you want to work on dotfiles and saving to github.
@@ -113,12 +119,6 @@ For dotfiles (files starting with `.`), you have two options:
 
 The `home` directory structure should mirror where you want files to appear in your home directory.
 
-### Configure oh-my-zsh
-
-In order to get some of the fancy command line info like the current git branch, we need oh-my-zsh.
-
-1. Install `sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"`
-2. 
 
 ### Install ripgrep
 
