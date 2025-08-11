@@ -130,6 +130,10 @@ sudo apt install ripgrep
 
 ## Development
 
+### Install Sqlite3
+
+On unbuntu server, sqlite3 does not come pre-installed. Run `sudo apt install sqlite3` to install.
+
 ### Install zip
 
 By default ubuntu server doesn't come with zip and unzip install. Run `sudo apt-get install zip unzip` to install.
