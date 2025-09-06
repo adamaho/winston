@@ -193,6 +193,14 @@ You can test with `node -v`.
 
 You can test with `pnpm -v`
 
+### Install Bun
+
+`curl -fsSL https://bun.com/install | bash`
+
+### Install ROS
+
+Follow the instructions [here](https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html#system-setup) to install ROS.
+
 ### Install opencode 
 
 `pnpm install -g opencode-ai` then run opencode auth login to login to any of the providers.

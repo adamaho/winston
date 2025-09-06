@@ -112,3 +112,18 @@ esac
 # neovim
 export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
 export EDITOR="nvim"
+
+# bun completions
+[ -s "/home/adam/.bun/_bun" ] && source "/home/adam/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# ros
+export LANG=en_US.UTF-8
+source /opt/ros/jazzy/setup.zsh
+export TURTLEBOT3_MODEL=waffle
+export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/jazzy/share/turtlebot3_gazebo/models
+
+alias ros='ros2'
