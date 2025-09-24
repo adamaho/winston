@@ -10,7 +10,7 @@ return {
 		-- lsp
 		require("mason").setup()
 		require("mason-lspconfig").setup({
-			ensure_installed = { "lua_ls", "vtsls", "cssls", "astro" },
+			ensure_installed = { "lua_ls", "vtsls", "cssls", "astro", "svelte" },
 			automatic_enable = false,
 		})
 		require("mason-tool-installer").setup({
