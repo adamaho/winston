@@ -17,7 +17,6 @@ return {
 			ensure_installed = { "stylua", "prettierd" },
 		})
 
-		local lspconfig = require("lspconfig")
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
 		local on_attach = function(_, bufnr)
@@ -34,10 +33,10 @@ return {
 
 		for _, server in ipairs(require("mason-lspconfig").get_installed_servers()) do
 			if server == "vtsls" then
-				lspconfig.vtsls.setup({
+				vim.lsp.config(server, {
 					on_attach = on_attach,
 					capabilities = capabilities,
-					root_dir = lspconfig.util.root_pattern(".git", "pnpm-workspace.yaml", "pnpm-lock.yaml"),
+					root_markers = {".git", "pnpm-workspace.yaml", "pnpm-lock.yaml"},
 					experimental = {
 						completion = {
 							entriesLimit = 5,
@@ -45,7 +44,7 @@ return {
 					},
 				})
 			else
-				lspconfig[server].setup({
+				vim.lsp.config(server, {
 					on_attach = on_attach,
 					capabilities = capabilities,
 				})
