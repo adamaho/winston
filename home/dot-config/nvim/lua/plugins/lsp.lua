@@ -11,7 +11,7 @@ return {
 		require("mason").setup()
 		require("mason-lspconfig").setup({
 			ensure_installed = { "lua_ls", "vtsls", "cssls", "astro", "svelte" },
-			automatic_enable = false,
+			automatic_enable = true,
 		})
 		require("mason-tool-installer").setup({
 			ensure_installed = { "stylua", "prettierd" },
@@ -36,7 +36,7 @@ return {
 				vim.lsp.config(server, {
 					on_attach = on_attach,
 					capabilities = capabilities,
-					root_markers = {".git", "pnpm-workspace.yaml", "pnpm-lock.yaml"},
+					root_markers = { ".git", "pnpm-workspace.yaml", "pnpm-lock.yaml", "bun.lock" },
 					experimental = {
 						completion = {
 							entriesLimit = 5,
