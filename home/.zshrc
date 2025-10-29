@@ -102,6 +102,12 @@ export NVM_DIR="$HOME/.nvm"
 # opencode
 export PATH=/home/adam/.opencode/bin:$PATH
 
+# Xvfb for clipboard support in headless environment
+if [ -z "$DISPLAY" ]; then
+  Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+  export DISPLAY=:99.0
+fi
+
 # pnpm
 export PNPM_HOME="/home/adam/.local/share/pnpm"
 case ":$PATH:" in
