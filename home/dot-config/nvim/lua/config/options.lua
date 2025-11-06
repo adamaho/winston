@@ -13,6 +13,10 @@ vim.opt.signcolumn = "auto"
 vim.opt.ruler = false
 vim.opt.showcmd = false
 
+-- Configure grep to use ripgrep
+vim.opt.grepprg = "rg --vimgrep --smart-case"
+vim.opt.grepformat = "%f:%l:%c:%m"
+
 -- Highlight when yanking text
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking text",
