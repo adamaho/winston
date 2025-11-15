@@ -133,3 +133,6 @@ export TURTLEBOT3_MODEL=waffle
 export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/jazzy/share/turtlebot3_gazebo/models
 
 alias ros='ros2'
+
+# private envs
+source ~/private.zsh
