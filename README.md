@@ -150,10 +150,20 @@ The ubunutu apt version of neovim is quite out of date. So we need to install th
 
 1. `curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz`
 2. `sudo rm -rf /opt/nvim`
-3. `sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz` 
+3. `sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz`
 4. add `export PATH="$PATH:/opt/nvim-linux-x86_64/bin"` to the bottom of `~/.zshrc`
 5. confirm installation dir by running `which nvim`. It should return `/opt/nvim-linux-x86_64/bin/nvim` and then `nvim --version`. You should see something equal to or greater than `0.11`
 6. Open with `nvim`
+
+### Install Lua and Luarocks
+
+Some nvim plugins (like rest.nvim) require Lua and luarocks to be installed system-wide:
+
+```
+sudo apt-get update && sudo apt-get install -y lua5.1 liblua5.1-0-dev luarocks
+```
+
+This enables plugins that use luarocks for dependency management, including XML parsing and other native libraries.
 
 ### Configure Tmux 
 
