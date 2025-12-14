@@ -14,6 +14,7 @@ return {
 					"json",
 					"markdown",
 					"bash",
+					"http",
 				},
 				auto_install = true,
 				highlight = {

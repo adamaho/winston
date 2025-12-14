@@ -19,4 +19,13 @@ return {
 			},
 		},
 	},
+	config = function()
+		-- Configure JSON formatting for rest.nvim responses
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "json",
+			callback = function()
+				vim.bo.formatprg = "jq"
+			end,
+		})
+	end,
 }
