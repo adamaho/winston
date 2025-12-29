@@ -6,3 +6,4 @@ shell-integration-features = no-cursor
 
 # font
 font-family = JetBrains Mono NL
+keybind = shift+enter=text:\x1b\r

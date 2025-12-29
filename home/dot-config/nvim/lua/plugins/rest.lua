@@ -39,7 +39,12 @@ return {
 		vim.api.nvim_create_autocmd("FileType", {
 			pattern = "http",
 			callback = function()
-				vim.keymap.set("n", "<leader>rr", "<cmd>Rest run<cr>", { buffer = true, desc = "Run request" })
+				vim.keymap.set(
+					"n",
+					"<leader>rr",
+					"<cmd>:horizontal Rest run<cr>",
+					{ buffer = true, desc = "Run request" }
+				)
 			end,
 		})
 	end,
