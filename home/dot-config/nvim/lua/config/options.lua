@@ -2,6 +2,23 @@ vim.opt.relativenumber = true
 
 vim.opt.clipboard = "unnamedplus"
 
+-- Use OSC 52 for clipboard (enables yank to local clipboard over SSH/tmux)
+local function paste()
+  return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+end
+
+vim.g.clipboard = {
+  name = "OSC 52",
+  copy = {
+    ["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+    ["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+  },
+  paste = {
+    ["+"] = paste,
+    ["*"] = paste,
+  },
+}
+
 vim.opt.guicursor = ""
 
 vim.opt.tabstop = 2
