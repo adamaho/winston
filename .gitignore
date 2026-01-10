@@ -1,4 +1,5 @@
 *.swp
+sst
 astro
 turborepo
 better-auth

@@ -138,6 +138,18 @@ curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/
 cd /tmp && tar xf lazygit.tar.gz && sudo install lazygit /usr/local/bin && rm lazygit lazygit.tar.gz
 ```
 
+### Install AWS Cli
+
+For the most up to date instructions see https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+Otherise, you can try running:
+
+```
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+```
+
 ## Development
 
 ### Install Sqlite3
