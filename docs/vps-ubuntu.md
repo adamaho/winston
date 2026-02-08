@@ -10,6 +10,24 @@ Run the VPS configurator with one or more flags:
 sudo ./scripts/configure-vps.sh --all
 ```
 
+### `configure-vps.sh` args
+
+- `--all`: Run core hardening/network setup flags together (`--disable-root-login`, `--upgrade`, `--configure-grub`, `--install-tailscale`, `--configure-ufw`).
+- `--disable-root-login`: Set `PermitRootLogin no` in `/etc/ssh/sshd_config` and restart SSH.
+- `--upgrade`: Run `apt update` and `apt upgrade -y`.
+- `--configure-grub`: Set GRUB defaults (`GRUB_TIMEOUT_STYLE=menu`, `GRUB_TIMEOUT=5`, `GRUB_TERMINAL=console`) and run `update-grub`.
+- `--install-tailscale`: Install Tailscale via the official install script.
+- `--configure-ufw`: Allow SSH, enable UFW, deny incoming by default, allow incoming on `tailscale0`, then reload UFW.
+- `--install-nvidia`: Run `ubuntu-drivers autoinstall`.
+- `--reboot`: Reboot after all selected tasks complete.
+- `-h`, `--help`: Print usage and exit.
+
+Argument notes:
+
+- You can pass one or many flags in a single run.
+- Unknown args fail fast with an error and usage output.
+- Script requires root (`sudo`) and Ubuntu.
+
 Common examples:
 
 ```sh
@@ -30,7 +48,7 @@ Use `--help` for the full option list.
 ## Upgrade System Packages
 
 ```sh
-sudo apt update && sudo apt upgrade
+sudo apt update && sudo apt upgrade -y
 ```
 
 ## Configure GRUB Boot Selection
@@ -56,7 +74,7 @@ If the reboot succeeds, you should be able to SSH back in after about a minute.
 
 Tailscale lets your devices securely reach the VPS from outside your local network.
 
-Install Tailscale for Linux by following: https://tailscale.com/kb/1031/install-linux
+Install Tailscale for Linux by following the official guide: https://tailscale.com/kb/1031/install-linux
 
 After setup, test reachability:
 

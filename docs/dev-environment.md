@@ -18,6 +18,17 @@ Skip auto-stow if needed:
 ./scripts/configure-dev.sh --skip-stow
 ```
 
+### `configure-dev.sh` args
+
+- `--skip-stow`: Skip the final `stow` pass that symlinks files from `home/` into `~`.
+- `-h`, `--help`: Print usage and exit.
+
+Argument notes:
+
+- Unknown args fail fast with an error and usage output.
+- Args can be combined (currently only `--skip-stow` is actionable).
+- No args means full install + stow.
+
 Supported OSes:
 
 - macOS
@@ -38,6 +49,8 @@ Winston stores home-directory files under `home/` and symlinks them into `~`.
 ```sh
 stow --dotfiles -R -v -t ~ -d ~/github.com/adamaho/winston/home .
 ```
+
+The helper script `scripts/install.sh` runs this same command and accepts no args.
 
 Notes:
 
@@ -93,7 +106,7 @@ infocmp -x xterm-ghostty | ssh <username>@<host> -- tic -x -
 
 The warning about older `tic` versions treating the description field as an alias is safe to ignore.
 
-## Neovim, Lua, and Luarocks
+## Neovim, Lua, and LuaRocks
 
 Install `nvim`, `lua`, and `luarocks`, then verify:
 
