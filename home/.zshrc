@@ -52,7 +52,9 @@ ZSH_THEME="alanpeabody"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git vi-mode)
 
-source $ZSH/oh-my-zsh.sh
+if [ -f "$ZSH/oh-my-zsh.sh" ]; then
+  source "$ZSH/oh-my-zsh.sh"
+fi
 
 # User configuration
 
@@ -92,7 +94,11 @@ setopt APPEND_HISTORY
 autoload -U colors compinit && colors && compinit
 
 # Aliases
-alias ls='ls --color=auto'
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  alias ls='ls -G'
+else
+  alias ls='ls --color=auto'
+fi
 alias ll='ls -alF'
 
 export NVM_DIR="$HOME/.nvm"
@@ -100,39 +106,33 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # opencode
-export PATH=/home/adam/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # Xvfb for clipboard support in headless environment
-if [ -z "$DISPLAY" ]; then
+if [[ "$(uname -s)" == "Linux" ]] && [ -z "$DISPLAY" ] && command -v Xvfb >/dev/null 2>&1; then
   Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
   export DISPLAY=:99.0
 fi
 
 # pnpm
-export PNPM_HOME="/home/adam/.local/share/pnpm"
+export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
 # neovim
-export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+if [ -d "/opt/nvim-linux-x86_64/bin" ]; then
+  export PATH="$PATH:/opt/nvim-linux-x86_64/bin"
+fi
 export EDITOR="nvim"
 
 # bun completions
-[ -s "/home/adam/.bun/_bun" ] && source "/home/adam/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# ros
-export LANG=en_US.UTF-8
-source /opt/ros/jazzy/setup.zsh
-export TURTLEBOT3_MODEL=waffle
-export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/jazzy/share/turtlebot3_gazebo/models
-
-alias ros='ros2'
-
 # private envs
-source ~/private.zsh
+[ -f "$HOME/private.zsh" ] && source "$HOME/private.zsh"

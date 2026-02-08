@@ -2,6 +2,24 @@
 
 This guide covers VPS-only system configuration steps. These are server hardening and networking tasks, not day-to-day dev tooling installs.
 
+## Scripted Setup
+
+Run the VPS configurator with one or more flags:
+
+```sh
+sudo ./scripts/configure-vps.sh --all
+```
+
+Common examples:
+
+```sh
+sudo ./scripts/configure-vps.sh --disable-root-login --configure-ufw
+sudo ./scripts/configure-vps.sh --configure-grub --reboot
+sudo ./scripts/configure-vps.sh --install-nvidia --reboot
+```
+
+Use `--help` for the full option list.
+
 ## Disable Root Login Over SSH
 
 1. Edit `/etc/ssh/sshd_config` and set `PermitRootLogin no` (it may be commented out).

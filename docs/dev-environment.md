@@ -4,9 +4,36 @@ This guide covers developer tooling and dotfiles setup for local machines and re
 
 Use `scripts/configure-dev.sh` for automated installs. Manual commands are listed here as references and verification steps.
 
+## Scripted Setup
+
+Run the installer:
+
+```sh
+./scripts/configure-dev.sh
+```
+
+Skip auto-stow if needed:
+
+```sh
+./scripts/configure-dev.sh --skip-stow
+```
+
+Supported OSes:
+
+- macOS
+- Ubuntu Linux
+
+Notes:
+
+- Ghostty is installed only on macOS.
+- On macOS, Xcode Command Line Tools are installed first when missing.
+- On Ubuntu, Node.js is installed with `nvm` and Neovim is installed from the official release tarball.
+
 ## Dotfiles with Stow
 
 Winston stores home-directory files under `home/` and symlinks them into `~`.
+
+`scripts/configure-dev.sh` runs this stow command automatically by default.
 
 ```sh
 stow --dotfiles -R -v -t ~ -d ~/github.com/adamaho/winston/home .
