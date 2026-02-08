@@ -34,6 +34,12 @@ vim.opt.showcmd = false
 vim.opt.grepprg = "rg --vimgrep --smart-case"
 vim.opt.grepformat = "%f:%l:%c:%m"
 
+vim.filetype.add({
+	extension = {
+		astro = "astro",
+	},
+})
+
 -- Highlight when yanking text
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking text",

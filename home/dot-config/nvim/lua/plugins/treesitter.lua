@@ -1,50 +1,36 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		branch = "main",
+		branch = "master",
 		build = ":TSUpdate",
 		config = function()
-			local ok, treesitter = pcall(require, "nvim-treesitter")
+			local ok, ts_configs = pcall(require, "nvim-treesitter.configs")
 			if not ok then
-				vim.notify("nvim-treesitter module not found. Run :Lazy sync.", vim.log.levels.ERROR)
+				vim.notify("nvim-treesitter.configs not found. Run :Lazy sync.", vim.log.levels.ERROR)
 				return
 			end
 
-			local languages = {
-				"lua",
-				"astro",
-				"typescript",
-				"tsx",
-				"html",
-				"css",
-				"json",
-				"markdown",
-				"markdown_inline",
-				"bash",
-			}
-			local filetypes = {
-				"lua",
-				"astro",
-				"typescript",
-				"tsx",
-				"html",
-				"css",
-				"json",
-				"markdown",
-				"sh",
-			}
-
-			treesitter.setup({})
-			treesitter.install(languages)
-
-			local ts_group = vim.api.nvim_create_augroup("nvim_treesitter_start", { clear = true })
-			vim.api.nvim_create_autocmd("FileType", {
-				group = ts_group,
-				pattern = filetypes,
-				callback = function(args)
-					pcall(vim.treesitter.start, args.buf)
-					vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-				end,
+			ts_configs.setup({
+				ensure_installed = {
+					"lua",
+					"astro",
+					"typescript",
+					"tsx",
+					"html",
+					"css",
+					"json",
+					"jsonc",
+					"markdown",
+					"markdown_inline",
+					"bash",
+				},
+				auto_install = true,
+				highlight = {
+					enable = true,
+				},
+				indent = {
+					enable = true,
+				},
 			})
 		end,
 	},
