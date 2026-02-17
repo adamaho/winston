@@ -31,7 +31,7 @@ Configure development tooling for supported OSes.
 
 Installs:
   zsh, oh-my-zsh, stow, ripgrep, lazygit, aws cli, ghostty (macOS only),
-  neovim, lua, luarocks, tmux, git, node, pnpm, opencode
+  neovim, lua, luarocks, tmux, git, node, pnpm, opencode, github cli
 
 Supported OS:
   - macOS (Homebrew)
@@ -474,13 +474,47 @@ install_awscli_ubuntu() {
   rm -rf "$tmp_dir"
 }
 
+install_github_cli_ubuntu() {
+  if has_cmd gh; then
+    log "github cli already installed"
+    return
+  fi
+
+  apt_update_once
+  run_root apt install -y curl ca-certificates
+
+  log "Installing GitHub CLI"
+  run_root install -m 0755 -d /etc/apt/keyrings
+  curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | run_root tee /etc/apt/keyrings/githubcli-archive-keyring.gpg >/dev/null
+  run_root chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg
+  run_root sh -c 'echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list'
+
+  APT_UPDATED=false
+  apt_update_once
+  run_root apt install -y gh
+}
+
+configure_github_cli() {
+  if ! has_cmd gh; then
+    warn "github cli not found; skipping configuration"
+    return
+  fi
+
+  if gh auth status >/dev/null 2>&1; then
+    log "Configuring GitHub CLI git integration"
+    gh auth setup-git >/dev/null 2>&1 || warn "Could not configure gh git integration automatically; run: gh auth setup-git"
+  else
+    log "GitHub CLI installed. Authenticate with: gh auth login"
+  fi
+}
+
 install_macos() {
   ensure_clt_macos
   ensure_brew
 
   log "Installing macOS packages with Homebrew"
   brew update
-  brew install zsh stow ripgrep lazygit awscli neovim lua luarocks tmux git pnpm
+  brew install zsh stow ripgrep lazygit awscli neovim lua luarocks tmux git pnpm gh
 
   if brew list --cask ghostty >/dev/null 2>&1; then
     log "ghostty already installed via Homebrew cask"
@@ -513,12 +547,13 @@ install_ubuntu() {
   install_lazygit_ubuntu
   install_awscli_ubuntu
   install_neovim_ubuntu
+  install_github_cli_ubuntu
 }
 
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow rg lazygit aws nvim lua luarocks tmux git node pnpm opencode)
+  local tools=(zsh stow rg lazygit aws nvim lua luarocks tmux git node pnpm gh opencode)
   local tool
   for tool in "${tools[@]}"; do
     if has_cmd "$tool"; then
@@ -540,7 +575,8 @@ print_summary() {
 
   log "Next steps:"
   log "1) Open a new shell session"
-  log "2) Run: opencode auth login"
+  log "2) Run: gh auth login && gh auth setup-git"
+  log "3) Run: opencode auth login"
 }
 
 main() {
@@ -579,6 +615,7 @@ main() {
   ensure_pnpm_home_path
   install_node_with_pnpm
   install_opencode
+  configure_github_cli
   stow_dotfiles
   print_summary
 }
