@@ -116,10 +116,9 @@ fi
 
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
+# Keep PNPM_HOME first so pnpm-managed Node is preferred.
+path=($PNPM_HOME ${path:#$PNPM_HOME})
+export PATH
 
 # neovim
 if [ -d "/opt/nvim-linux-x86_64/bin" ]; then

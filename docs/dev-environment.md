@@ -38,7 +38,8 @@ Notes:
 
 - Ghostty is installed only on macOS.
 - On macOS, Xcode Command Line Tools are installed first when missing.
-- On Ubuntu, Node.js is installed with `nvm` and Neovim is installed from the official release tarball.
+- On macOS and Ubuntu, Node.js LTS is installed with `pnpm env use --global lts`.
+- On Ubuntu, Neovim is installed from the official release tarball.
 
 ## Dotfiles with Stow
 
@@ -149,8 +150,21 @@ git config --global user.name "Your Name"
 
 If not installed by `scripts/configure-dev.sh`, install manually:
 
+macOS:
+
 ```sh
-npm install -g pnpm@latest-10
+brew install pnpm
+pnpm env use --global lts
+pnpm install -g opencode-ai
+```
+
+Ubuntu:
+
+```sh
+curl -fsSL https://get.pnpm.io/install.sh | sh -
+export PNPM_HOME="$HOME/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+pnpm env use --global lts
 pnpm install -g opencode-ai
 ```
 

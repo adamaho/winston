@@ -9,6 +9,7 @@ OS=""
 ARCH="$(uname -m)"
 APT_UPDATED=false
 DO_STOW=true
+PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
 
 log() {
   printf '[%s] %s\n' "$SCRIPT_NAME" "$1"
@@ -38,6 +39,7 @@ Supported OS:
 
 Notes:
   - On macOS, Homebrew is installed automatically when missing.
+  - On macOS and Ubuntu, Node.js is installed with pnpm.
 
 Options:
   --skip-stow   Skip stowing dotfiles at the end
@@ -47,6 +49,13 @@ EOF
 
 has_cmd() {
   command -v "$1" >/dev/null 2>&1
+}
+
+ensure_pnpm_home_path() {
+  case ":$PATH:" in
+    *":$PNPM_HOME:"*) ;;
+    *) export PATH="$PNPM_HOME:$PATH" ;;
+  esac
 }
 
 run_root() {
@@ -230,29 +239,10 @@ ensure_zsh_default_shell() {
   fi
 }
 
-install_node_ubuntu() {
-  export NVM_DIR="$HOME/.nvm"
-
-  if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
-    log "Installing nvm"
-    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-  fi
-
-  # shellcheck disable=SC1090
-  source "$NVM_DIR/nvm.sh"
-
-  if ! has_cmd node; then
-    log "Installing Node.js LTS with nvm"
-    nvm install --lts
-    nvm alias default 'lts/*'
-  else
-    log "node already installed: $(node -v)"
-  fi
-}
-
 ensure_pnpm() {
   if has_cmd pnpm; then
     log "pnpm already installed: $(pnpm -v)"
+    ensure_pnpm_home_path
     return
   fi
 
@@ -260,9 +250,39 @@ ensure_pnpm() {
     log "Installing pnpm via corepack"
     corepack enable
     corepack prepare pnpm@latest --activate
-  else
+  elif has_cmd npm; then
     log "Installing pnpm via npm"
     npm install -g pnpm@latest-10
+  else
+    log "Installing pnpm via official install script"
+    curl -fsSL https://get.pnpm.io/install.sh | sh -
+  fi
+
+  ensure_pnpm_home_path
+
+  if ! has_cmd pnpm; then
+    err "pnpm install completed but pnpm is still unavailable"
+    exit 1
+  fi
+
+  log "pnpm installed: $(pnpm -v)"
+}
+
+install_node_with_pnpm() {
+  ensure_pnpm_home_path
+
+  if [[ -x "$PNPM_HOME/node" ]]; then
+    log "pnpm-managed node already installed: $("$PNPM_HOME/node" -v)"
+    return
+  fi
+
+  log "Installing Node.js LTS with pnpm"
+  pnpm env use --global lts
+
+  if [[ -x "$PNPM_HOME/node" ]]; then
+    log "node installed via pnpm: $("$PNPM_HOME/node" -v)"
+  else
+    warn "Node install via pnpm may have failed; '$PNPM_HOME/node' not found"
   fi
 }
 
@@ -460,7 +480,7 @@ install_macos() {
 
   log "Installing macOS packages with Homebrew"
   brew update
-  brew install zsh stow ripgrep lazygit awscli neovim lua luarocks tmux git node pnpm
+  brew install zsh stow ripgrep lazygit awscli neovim lua luarocks tmux git pnpm
 
   if brew list --cask ghostty >/dev/null 2>&1; then
     log "ghostty already installed via Homebrew cask"
@@ -493,7 +513,6 @@ install_ubuntu() {
   install_lazygit_ubuntu
   install_awscli_ubuntu
   install_neovim_ubuntu
-  install_node_ubuntu
 }
 
 print_summary() {
@@ -557,6 +576,8 @@ main() {
   install_oh_my_zsh
   ensure_zsh_default_shell
   ensure_pnpm
+  ensure_pnpm_home_path
+  install_node_with_pnpm
   install_opencode
   stow_dotfiles
   print_summary
