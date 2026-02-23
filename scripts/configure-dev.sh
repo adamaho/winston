@@ -30,7 +30,7 @@ Usage: ./$SCRIPT_NAME [options]
 Configure development tooling for supported OSes.
 
 Installs:
-  zsh, oh-my-zsh, stow, ripgrep, lazygit, aws cli, ghostty (macOS only),
+  zsh, oh-my-zsh, stow, make, ripgrep, lazygit, aws cli, ghostty,
   neovim, lua, luarocks, tmux, git, node, pnpm, opencode, github cli
 
 Supported OS:
@@ -312,55 +312,91 @@ stow_dotfiles() {
     return
   fi
 
-  log "Stowing dotfiles from $REPO_ROOT/home"
-
-  local output
-  local status=0
-  output="$(stow --dotfiles -R -v -t "$HOME" -d "$REPO_ROOT/home" . 2>&1)" || status=$?
-  printf '%s\n' "$output"
-
-  if [[ "$status" -eq 0 ]]; then
-    return
-  fi
-
-  if ! printf '%s\n' "$output" | grep -q "cannot stow"; then
-    err "stow failed for an unknown reason"
-    return "$status"
-  fi
-
   local backup_root
   backup_root="$HOME/.winston-backups/stow-$(date +%Y%m%d%H%M%S)"
-  local moved_any=false
 
-  while IFS= read -r line; do
-    case "$line" in
-      *"cannot stow "*"existing target "*)
-        local target_rel
-        local target_abs
-        local backup_path
+  backup_existing_path() {
+    local target_abs="$1"
+    if [[ ! -e "$target_abs" || -L "$target_abs" ]]; then
+      return
+    fi
 
-        target_rel="${line#* existing target }"
-        target_rel="${target_rel%% since*}"
-        target_abs="$HOME/$target_rel"
+    local target_rel
+    local backup_path
+    target_rel="${target_abs#"$HOME"/}"
+    backup_path="$backup_root/$target_rel"
+    mkdir -p "$(dirname "$backup_path")"
+    mv "$target_abs" "$backup_path"
+    log "Backed up existing file: $target_abs -> $backup_path"
+  }
 
-        if [[ -e "$target_abs" && ! -L "$target_abs" ]]; then
-          backup_path="$backup_root/$target_rel"
-          mkdir -p "$(dirname "$backup_path")"
-          mv "$target_abs" "$backup_path"
-          moved_any=true
-          log "Backed up existing file: $target_abs -> $backup_path"
-        fi
-        ;;
-    esac
-  done < <(printf '%s\n' "$output")
+  run_stow_with_backup() {
+    local stow_dir="$1"
+    local target_dir="$2"
+    shift 2
 
-  if [[ "$moved_any" != true ]]; then
-    err "stow reported conflicts, but no files were backed up automatically"
-    return "$status"
+    local output
+    local status=0
+    output="$(stow --dotfiles -v -t "$target_dir" -d "$stow_dir" "$@" 2>&1)" || status=$?
+    printf '%s\n' "$output"
+
+    if [[ "$status" -eq 0 ]]; then
+      return
+    fi
+
+    if ! printf '%s\n' "$output" | grep -q "cannot stow"; then
+      err "stow failed for an unknown reason"
+      return "$status"
+    fi
+
+    local moved_any=false
+
+    while IFS= read -r line; do
+      case "$line" in
+        *"cannot stow "*"existing target "*)
+          local target_rel
+          local target_abs
+          local backup_path
+
+          target_rel="${line#* existing target }"
+          target_rel="${target_rel%% since*}"
+          target_abs="$target_dir/$target_rel"
+
+          if [[ -e "$target_abs" && ! -L "$target_abs" ]]; then
+            backup_path="$backup_root/$target_rel"
+            mkdir -p "$(dirname "$backup_path")"
+            mv "$target_abs" "$backup_path"
+            moved_any=true
+            log "Backed up existing file: $target_abs -> $backup_path"
+          fi
+          ;;
+      esac
+    done < <(printf '%s\n' "$output")
+
+    if [[ "$moved_any" != true ]]; then
+      err "stow reported conflicts, but no files were backed up automatically"
+      return "$status"
+    fi
+
+    log "Retrying stow after backing up conflicting files"
+    stow --dotfiles -v -t "$target_dir" -d "$stow_dir" "$@"
+  }
+
+  log "Linking top-level dotfiles from $REPO_ROOT/home"
+  local top_level_dotfile
+  for top_level_dotfile in .zshrc .tmux.conf; do
+    if [[ ! -e "$REPO_ROOT/home/$top_level_dotfile" ]]; then
+      continue
+    fi
+    backup_existing_path "$HOME/$top_level_dotfile"
+    ln -sfn "$REPO_ROOT/home/$top_level_dotfile" "$HOME/$top_level_dotfile"
+  done
+
+  if [[ -d "$REPO_ROOT/home/dot-config" ]]; then
+    mkdir -p "$HOME/.config"
+    log "Stowing .config entries from $REPO_ROOT/home/dot-config"
+    run_stow_with_backup "$REPO_ROOT/home" "$HOME/.config" dot-config
   fi
-
-  log "Retrying stow after backing up conflicting files"
-  stow --dotfiles -R -v -t "$HOME" -d "$REPO_ROOT/home" .
 }
 
 install_neovim_ubuntu() {
@@ -494,6 +530,78 @@ install_github_cli_ubuntu() {
   run_root apt install -y gh
 }
 
+install_ghostty_ubuntu() {
+  if has_cmd ghostty; then
+    log "ghostty already installed"
+    return
+  fi
+
+  log "Installing Ghostty on Ubuntu"
+  if ! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/mkasberg/ghostty-ubuntu/HEAD/install.sh)"; then
+    warn "Ghostty install failed; continuing without ghostty"
+  fi
+}
+
+configure_ghostty_shell() {
+  local zsh_path
+  local ghostty_dir="$HOME/.config/ghostty"
+  local ghostty_config="$ghostty_dir/config"
+  local desired_command
+
+  zsh_path="$(command -v zsh 2>/dev/null || true)"
+  if [[ -z "$zsh_path" ]]; then
+    warn "zsh not found; skipping Ghostty shell configuration"
+    return
+  fi
+
+  desired_command="command = $zsh_path --login"
+
+  if ! has_cmd ghostty && [[ ! -e "$ghostty_config" ]]; then
+    log "Ghostty not installed; skipping shell command configuration"
+    return
+  fi
+
+  mkdir -p "$ghostty_dir"
+
+  if [[ -L "$ghostty_config" ]]; then
+    log "Ghostty config is symlinked; shell command managed by dotfiles"
+    return
+  fi
+
+  if [[ ! -f "$ghostty_config" ]]; then
+    printf '%s\n' "$desired_command" > "$ghostty_config"
+    log "Configured Ghostty to launch zsh login shell"
+    return
+  fi
+
+  if grep -Fqx "$desired_command" "$ghostty_config"; then
+    log "Ghostty already configured to launch zsh login shell"
+    return
+  fi
+
+  local tmp_config
+  tmp_config="$(mktemp)"
+  awk -v command_line="$desired_command" '
+    BEGIN { replaced=0 }
+    /^command = / {
+      if (replaced == 0) {
+        print command_line
+        replaced=1
+      }
+      next
+    }
+    { print }
+    END {
+      if (replaced == 0) {
+        print command_line
+      }
+    }
+  ' "$ghostty_config" > "$tmp_config"
+  mv "$tmp_config" "$ghostty_config"
+
+  log "Updated Ghostty shell command to zsh login shell"
+}
+
 configure_github_cli() {
   if ! has_cmd gh; then
     warn "github cli not found; skipping configuration"
@@ -514,7 +622,7 @@ install_macos() {
 
   log "Installing macOS packages with Homebrew"
   brew update
-  brew install zsh stow ripgrep lazygit awscli neovim lua luarocks tmux git pnpm gh
+  brew install zsh stow make ripgrep lazygit awscli neovim lua luarocks tmux git pnpm gh
 
   if brew list --cask ghostty >/dev/null 2>&1; then
     log "ghostty already installed via Homebrew cask"
@@ -533,6 +641,7 @@ install_ubuntu() {
   run_root apt install -y \
     zsh \
     stow \
+    make \
     ripgrep \
     tmux \
     git \
@@ -548,12 +657,13 @@ install_ubuntu() {
   install_awscli_ubuntu
   install_neovim_ubuntu
   install_github_cli_ubuntu
+  install_ghostty_ubuntu
 }
 
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow rg lazygit aws nvim lua luarocks tmux git node pnpm gh opencode)
+  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm gh opencode)
   local tool
   for tool in "${tools[@]}"; do
     if has_cmd "$tool"; then
@@ -570,7 +680,11 @@ print_summary() {
       printf '  - %-8s %s\n' "ghostty" "MISSING"
     fi
   else
-    log "Ghostty install skipped on Ubuntu (macOS-only app)"
+    if has_cmd ghostty; then
+      printf '  - %-8s %s\n' "ghostty" "OK"
+    else
+      printf '  - %-8s %s\n' "ghostty" "MISSING"
+    fi
   fi
 
   log "Next steps:"
@@ -617,6 +731,7 @@ main() {
   install_opencode
   configure_github_cli
   stow_dotfiles
+  configure_ghostty_shell
   print_summary
 }
 

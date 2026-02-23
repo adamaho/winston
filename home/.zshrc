@@ -1,3 +1,7 @@
+if [ -n "${GHOSTTY_RESOURCES_DIR:-}" ] && [ -f "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration" ]; then
+  source "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
+fi
+
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="alanpeabody"
