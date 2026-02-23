@@ -17,7 +17,12 @@ return {
 			},
 		})
 
-		telescope.load_extension("fzf")
+		local ok_fzf, fzf_err = pcall(telescope.load_extension, "fzf")
+		if not ok_fzf then
+			vim.schedule(function()
+				vim.notify("telescope-fzf-native unavailable: " .. tostring(fzf_err), vim.log.levels.WARN)
+			end)
+		end
 
 		-- keymaps
 		local opts = { noremap = true, silent = true }

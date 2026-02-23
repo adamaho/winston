@@ -542,6 +542,49 @@ install_ghostty_ubuntu() {
   fi
 }
 
+ensure_telescope_fzf_native() {
+  if ! has_cmd nvim; then
+    warn "neovim not found; skipping telescope-fzf-native setup"
+    return
+  fi
+
+  local nvim_config_dir="$HOME/.config/nvim"
+  local plugin_dir="$HOME/.local/share/nvim/lazy/telescope-fzf-native.nvim"
+  local library_path="$plugin_dir/build/libfzf.so"
+
+  if [[ -f "$library_path" ]]; then
+    log "telescope-fzf-native already built"
+    return
+  fi
+
+  if [[ ! -d "$nvim_config_dir" ]]; then
+    warn "Neovim config not found at $nvim_config_dir; skipping telescope-fzf-native setup"
+    return
+  fi
+
+  log "Syncing Neovim plugins"
+  if ! nvim --headless "+Lazy! sync" "+qa" >/dev/null 2>&1; then
+    warn "Could not sync Neovim plugins automatically; run: nvim --headless \"+Lazy! sync\" \"+qa\""
+  fi
+
+  if [[ ! -d "$plugin_dir" ]]; then
+    warn "telescope-fzf-native plugin not found after sync; run :Lazy sync in Neovim"
+    return
+  fi
+
+  log "Building telescope-fzf-native"
+  if ! make -C "$plugin_dir"; then
+    warn "Failed to build telescope-fzf-native; run: make -C $plugin_dir"
+    return
+  fi
+
+  if [[ -f "$library_path" ]]; then
+    log "telescope-fzf-native built successfully"
+  else
+    warn "Build finished but $library_path is missing"
+  fi
+}
+
 configure_ghostty_shell() {
   local zsh_path
   local ghostty_dir="$HOME/.config/ghostty"
@@ -641,6 +684,7 @@ install_ubuntu() {
   run_root apt install -y \
     zsh \
     stow \
+    build-essential \
     make \
     ripgrep \
     tmux \
@@ -731,6 +775,7 @@ main() {
   install_opencode
   configure_github_cli
   stow_dotfiles
+  ensure_telescope_fzf_native
   configure_ghostty_shell
   print_summary
 }
