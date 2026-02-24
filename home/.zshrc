@@ -1,3 +1,7 @@
+if [ -z "${ZSH_VERSION:-}" ]; then
+  return 0 2>/dev/null || exit 0
+fi
+
 if [ -n "${GHOSTTY_RESOURCES_DIR:-}" ] && [ -f "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration" ]; then
   source "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
 fi
