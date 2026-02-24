@@ -1,0 +1,45 @@
+[
+  {
+    "context": "vim_mode == insert && !menu",
+    "bindings": {
+      "j j": "vim::NormalBefore",
+    },
+  },
+  {
+    "context": "vim_mode == visual && !menu",
+    "bindings": {
+      "shift-j": "editor::MoveLineDown",
+      "shift-k": "editor::MoveLineUp",
+    },
+  },
+  {
+    "context": "vim_mode == normal && !menu",
+    "bindings": {
+      "space c d": "editor::Hover",
+      "space [ d": "editor::GoToPreviousDiagnostic",
+      "space ] d": "editor::GoToDiagnostic",
+      "space b d": [
+        "pane::CloseActiveItem",
+        {
+          "close_pinned": false,
+        },
+      ],
+      "shift-l": "pane::ActivateNextItem",
+      "shift-h": "pane::ActivatePreviousItem",
+      "space f f": "file_finder::Toggle",
+      "space f h": "file_finder::Toggle",
+      "space f i": "pane::DeploySearch",
+      "space f d": "diagnostics::Deploy",
+      "space f shift-d": "diagnostics::Deploy",
+      "space f b": "tab_switcher::Toggle",
+      "space f g": "pane::DeploySearch",
+      "space r a": [
+        "pane::DeploySearch",
+        {
+          "replace_enabled": true,
+        },
+      ],
+      "space r l": "buffer_search::DeployReplace",
+    },
+  },
+]
