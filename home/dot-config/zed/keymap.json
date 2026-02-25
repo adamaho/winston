@@ -3,11 +3,13 @@
     "context": "vim_mode == insert && !menu",
     "bindings": {
       "j j": "vim::NormalBefore",
+      "ctrl-v": "editor::Paste",
     },
   },
   {
     "context": "vim_mode == visual && !menu",
     "bindings": {
+      "ctrl-v": "vim::Paste",
       "shift-j": "editor::MoveLineDown",
       "shift-k": "editor::MoveLineUp",
     },
