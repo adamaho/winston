@@ -39,6 +39,7 @@ Notes:
 - Ghostty is installed only on macOS.
 - On macOS, Xcode Command Line Tools are installed first when missing.
 - On macOS and Ubuntu, Node.js LTS is installed with `pnpm env use --global lts`.
+- On macOS and Ubuntu, Rust stable is installed with rustup and includes `rustfmt` + `clippy`.
 - On Ubuntu, Neovim is installed from the official release tarball.
 
 ## Dotfiles with Stow
@@ -91,6 +92,10 @@ Install and verify:
 - `git`
 - `node`
 - `pnpm`
+- `rustup`
+- `cargo`
+- `rustc`
+- `rustfmt`
 - `opencode`
 
 `scripts/configure-dev.sh` is the canonical installer for these tools.
@@ -107,14 +112,18 @@ infocmp -x xterm-ghostty | ssh <username>@<host> -- tic -x -
 
 The warning about older `tic` versions treating the description field as an alias is safe to ignore.
 
-## Neovim, Lua, and LuaRocks
+## Neovim, Lua, LuaRocks, and Rust
 
-Install `nvim`, `lua`, and `luarocks`, then verify:
+Install `nvim`, `lua`, `luarocks`, and Rust tooling, then verify:
 
 ```sh
 nvim --version
 lua -v
 luarocks --version
+rustup --version
+cargo --version
+rustc --version
+rustfmt --version
 ```
 
 `scripts/configure-dev.sh` should manage installation across supported OSes.

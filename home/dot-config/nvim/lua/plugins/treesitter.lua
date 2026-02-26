@@ -13,6 +13,7 @@ return {
 			ts_configs.setup({
 				ensure_installed = {
 					"lua",
+					"rust",
 					"astro",
 					"typescript",
 					"tsx",

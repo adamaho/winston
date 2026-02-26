@@ -10,6 +10,7 @@ ARCH="$(uname -m)"
 APT_UPDATED=false
 DO_STOW=true
 PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
+CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
 
 log() {
   printf '[%s] %s\n' "$SCRIPT_NAME" "$1"
@@ -31,7 +32,8 @@ Configure development tooling for supported OSes.
 
 Installs:
   zsh, oh-my-zsh, stow, make, ripgrep, lazygit, aws cli, ghostty,
-  neovim, lua, luarocks, tmux, git, node, pnpm, opencode, github cli
+  neovim, lua, luarocks, tmux, git, node, pnpm, rust (rustup/cargo/rustc),
+  opencode, github cli
 
 Supported OS:
   - macOS (Homebrew)
@@ -55,6 +57,16 @@ ensure_pnpm_home_path() {
   case ":$PATH:" in
     *":$PNPM_HOME:"*) ;;
     *) export PATH="$PNPM_HOME:$PATH" ;;
+  esac
+}
+
+ensure_cargo_bin_path() {
+  local cargo_bin
+  cargo_bin="$CARGO_HOME/bin"
+
+  case ":$PATH:" in
+    *":$cargo_bin:"*) ;;
+    *) export PATH="$cargo_bin:$PATH" ;;
   esac
 }
 
@@ -283,6 +295,46 @@ install_node_with_pnpm() {
     log "node installed via pnpm: $("$PNPM_HOME/node" -v)"
   else
     warn "Node install via pnpm may have failed; '$PNPM_HOME/node' not found"
+  fi
+}
+
+install_rust_toolchain() {
+  ensure_cargo_bin_path
+
+  if has_cmd rustup; then
+    log "rustup already installed: $(rustup --version | head -n 1)"
+  else
+    if ! has_cmd curl; then
+      err "curl is required to install rustup"
+      exit 1
+    fi
+
+    log "Installing Rust stable toolchain with rustup"
+    curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+  fi
+
+  ensure_cargo_bin_path
+
+  if ! has_cmd rustup; then
+    err "rustup install completed but rustup is still unavailable"
+    exit 1
+  fi
+
+  log "Ensuring Rust stable toolchain and components"
+  rustup toolchain install stable
+  rustup default stable
+  rustup component add rustfmt clippy
+
+  if has_cmd rustc; then
+    log "rustc installed: $(rustc --version)"
+  else
+    warn "Rust install may have failed; rustc not found"
+  fi
+
+  if has_cmd cargo; then
+    log "cargo installed: $(cargo --version)"
+  else
+    warn "Rust install may have failed; cargo not found"
   fi
 }
 
@@ -707,7 +759,7 @@ install_ubuntu() {
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm gh opencode)
+  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode)
   local tool
   for tool in "${tools[@]}"; do
     if has_cmd "$tool"; then
@@ -772,6 +824,7 @@ main() {
   ensure_pnpm
   ensure_pnpm_home_path
   install_node_with_pnpm
+  install_rust_toolchain
   install_opencode
   configure_github_cli
   stow_dotfiles
