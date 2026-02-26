@@ -126,6 +126,14 @@ fi
 export PNPM_HOME="$HOME/.local/share/pnpm"
 # Keep PNPM_HOME first so pnpm-managed Node is preferred.
 path=($PNPM_HOME ${path:#$PNPM_HOME})
+
+# rust
+export CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
+if [ -d "$CARGO_HOME/bin" ]; then
+  # Keep Cargo bin early so rustup-managed tools are picked up first.
+  path=($CARGO_HOME/bin ${path:#$CARGO_HOME/bin})
+fi
+
 export PATH
 
 # neovim
