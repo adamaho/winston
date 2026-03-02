@@ -1,7 +1,11 @@
 {
   "theme": "Ayu Mirage",
   "vim_mode": true,
-  "buffer_font_size": 13,
+  "buffer_font_size": 12,
+  "ui_font_size": 12,
+  "terminal": {
+    "font_size": 12,
+  },
   "relative_line_numbers": "enabled",
   "vim": {
     "use_system_clipboard": "always",

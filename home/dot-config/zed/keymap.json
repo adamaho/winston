@@ -1,5 +1,36 @@
 [
   {
+    "context": "Workspace",
+    "bindings": {
+      "ctrl-s": null,
+      "ctrl-s h": "workspace::ActivatePaneLeft",
+      "ctrl-s j": "workspace::ActivatePaneDown",
+      "ctrl-s k": "workspace::ActivatePaneUp",
+      "ctrl-s l": "workspace::ActivatePaneRight",
+      "ctrl-s shift-h": "vim::ResizePaneLeft",
+      "ctrl-s shift-j": "vim::ResizePaneDown",
+      "ctrl-s shift-k": "vim::ResizePaneUp",
+      "ctrl-s shift-l": "vim::ResizePaneRight",
+      "ctrl-s -": "pane::SplitHorizontal",
+      "ctrl-s |": "pane::SplitVertical",
+      "ctrl-s t": "terminal_panel::Toggle",
+      "ctrl-s ;": "editor::ToggleFocus",
+      "ctrl-s x": [
+        "pane::CloseActiveItem",
+        {
+          "close_pinned": false,
+        },
+      ],
+    },
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-s": null,
+      "ctrl-s t": "terminal_panel::Toggle",
+    },
+  },
+  {
     "context": "vim_mode == insert && !menu",
     "bindings": {
       "j j": "vim::NormalBefore",
@@ -29,6 +60,7 @@
       "shift-l": "pane::ActivateNextItem",
       "shift-h": "pane::ActivatePreviousItem",
       "space f f": "file_finder::Toggle",
+      "space f s": "project_panel::ToggleFocus",
       "space f h": "file_finder::Toggle",
       "space f i": "pane::DeploySearch",
       "space f d": "diagnostics::Deploy",
@@ -42,6 +74,31 @@
         },
       ],
       "space r l": "buffer_search::DeployReplace",
+    },
+  },
+  {
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      "space f f": "file_finder::Toggle",
+      "space f i": "pane::DeploySearch",
+      "space f s": "project_panel::ToggleFocus",
+    },
+  },
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "r": "project_panel::Rename",
+      "d": null,
+      "d d": [
+        "project_panel::Trash",
+        {
+          "skip_prompt": false,
+        },
+      ],
+      "o": "project_panel::NewFile",
+      "space f f": "file_finder::Toggle",
+      "space f i": "pane::DeploySearch",
+      "space f s": "zed::NoAction",
     },
   },
 ]
