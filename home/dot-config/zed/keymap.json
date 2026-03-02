@@ -14,6 +14,13 @@
       "ctrl-s -": "pane::SplitHorizontal",
       "ctrl-s |": "pane::SplitVertical",
       "ctrl-s t": "terminal_panel::Toggle",
+      "ctrl-s o": [
+        "task::Spawn",
+        {
+          "task_name": "OpenCode",
+          "reveal_target": "center",
+        },
+      ],
       "ctrl-s ;": "editor::ToggleFocus",
       "ctrl-s x": [
         "pane::CloseActiveItem",
@@ -28,6 +35,21 @@
     "bindings": {
       "ctrl-s": null,
       "ctrl-s t": "terminal_panel::Toggle",
+      "ctrl-s h": "workspace::ActivatePaneLeft",
+      "ctrl-s j": "workspace::ActivatePaneDown",
+      "ctrl-s k": "workspace::ActivatePaneUp",
+      "ctrl-s l": "workspace::ActivatePaneRight",
+      "ctrl-s n": "pane::ActivateNextItem",
+      "ctrl-s p": "pane::ActivatePreviousItem",
+      "shift-l": "pane::ActivateNextItem",
+      "shift-h": "pane::ActivatePreviousItem",
+      "ctrl-s o": [
+        "task::Spawn",
+        {
+          "task_name": "OpenCode",
+          "reveal_target": "center",
+        },
+      ],
     },
   },
   {
@@ -98,7 +120,7 @@
       "o": "project_panel::NewFile",
       "space f f": "file_finder::Toggle",
       "space f i": "pane::DeploySearch",
-      "space f s": "zed::NoAction",
+      "space f s": null,
     },
   },
 ]
