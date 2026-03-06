@@ -15,11 +15,14 @@
       "ctrl-s |": "pane::SplitVertical",
       "ctrl-s t": "terminal_panel::Toggle",
       "ctrl-s o": [
-        "task::Spawn",
+        "agent::NewExternalAgentThread",
         {
-          "task_name": "OpenCode",
-          "reveal_target": "center",
-        },
+          "agent": {
+            "custom": {
+              "name": "opencode"
+            }
+          }
+        }
       ],
       "ctrl-s ;": "editor::ToggleFocus",
       "ctrl-s x": [

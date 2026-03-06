@@ -1,4 +1,26 @@
 {
+  "agent_servers": {
+    "opencode": {
+      "type": "registry"
+    }
+  },
+  "lsp": {
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "updateImportsOnFileMove": {
+            "enabled": "always"
+          }
+        },
+        "javascript": {
+          "updateImportsOnFileMove": {
+            "enabled": "always"
+          }
+        }
+      },
+      "enable_lsp_tasks": true
+    }
+  },
   "theme": "Catppuccin Macchiato",
   "vim_mode": true,
   "buffer_font_size": 12,

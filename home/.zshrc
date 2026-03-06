@@ -113,9 +113,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# opencode
-export PATH="$HOME/.opencode/bin:$PATH"
-
 # Xvfb for clipboard support in headless environment
 if [[ "$(uname -s)" == "Linux" ]] && [ -z "$DISPLAY" ] && command -v Xvfb >/dev/null 2>&1; then
   Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
