@@ -54,7 +54,22 @@ has_cmd() {
   command -v "$1" >/dev/null 2>&1
 }
 
+refresh_pnpm_home_from_cli() {
+  local pnpm_bin
+
+  if ! has_cmd pnpm; then
+    return
+  fi
+
+  pnpm_bin="$(pnpm bin -g 2>/dev/null || true)"
+  if [[ -n "$pnpm_bin" ]]; then
+    PNPM_HOME="$pnpm_bin"
+  fi
+}
+
 ensure_pnpm_home_path() {
+  refresh_pnpm_home_from_cli
+
   case ":$PATH:" in
     *":$PNPM_HOME:"*) ;;
     *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -76,6 +91,18 @@ ensure_local_bin_path() {
     *":$LOCAL_BIN:"*) ;;
     *) export PATH="$LOCAL_BIN:$PATH" ;;
   esac
+}
+
+pnpm_global_package_installed() {
+  local package_name="$1"
+  local list_output
+
+  if ! has_cmd pnpm; then
+    return 1
+  fi
+
+  list_output="$(pnpm list -g --depth 0 "$package_name" --json 2>/dev/null || true)"
+  [[ "$list_output" == *"\"$package_name\""* ]]
 }
 
 run_root() {
@@ -347,8 +374,15 @@ install_rust_toolchain() {
 }
 
 install_opencode() {
+  ensure_pnpm_home_path
+
   if has_cmd opencode; then
     log "opencode already installed"
+    return
+  fi
+
+  if pnpm_global_package_installed opencode-ai; then
+    log "opencode already installed via pnpm"
     return
   fi
 
@@ -794,7 +828,9 @@ print_summary() {
   local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode claude)
   local tool
   for tool in "${tools[@]}"; do
-    if has_cmd "$tool"; then
+    if [[ "$tool" == "opencode" ]] && pnpm_global_package_installed opencode-ai; then
+      printf '  - %-8s %s\n' "$tool" "OK"
+    elif has_cmd "$tool"; then
       printf '  - %-8s %s\n' "$tool" "OK"
     else
       printf '  - %-8s %s\n' "$tool" "MISSING"
