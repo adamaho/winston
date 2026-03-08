@@ -11,6 +11,7 @@ APT_UPDATED=false
 DO_STOW=true
 PNPM_HOME="${PNPM_HOME:-$HOME/.local/share/pnpm}"
 CARGO_HOME="${CARGO_HOME:-$HOME/.cargo}"
+LOCAL_BIN="${HOME}/.local/bin"
 
 log() {
   printf '[%s] %s\n' "$SCRIPT_NAME" "$1"
@@ -33,7 +34,7 @@ Configure development tooling for supported OSes.
 Installs:
   zsh, oh-my-zsh, stow, make, ripgrep, lazygit, aws cli, ghostty,
   neovim, lua, luarocks, tmux, git, node, pnpm, rust (rustup/cargo/rustc),
-  opencode, github cli
+  opencode, github cli, claude code
 
 Supported OS:
   - macOS (Homebrew)
@@ -67,6 +68,13 @@ ensure_cargo_bin_path() {
   case ":$PATH:" in
     *":$cargo_bin:"*) ;;
     *) export PATH="$cargo_bin:$PATH" ;;
+  esac
+}
+
+ensure_local_bin_path() {
+  case ":$PATH:" in
+    *":$LOCAL_BIN:"*) ;;
+    *) export PATH="$LOCAL_BIN:$PATH" ;;
   esac
 }
 
@@ -346,6 +354,30 @@ install_opencode() {
 
   log "Installing opencode"
   pnpm add -g opencode-ai
+}
+
+install_claude_code() {
+  ensure_local_bin_path
+
+  if has_cmd claude; then
+    log "claude already installed"
+    return
+  fi
+
+  if ! has_cmd curl; then
+    err "curl is required to install Claude Code"
+    exit 1
+  fi
+
+  log "Installing Claude Code"
+  curl -fsSL https://claude.ai/install.sh | bash
+  ensure_local_bin_path
+
+  if has_cmd claude; then
+    log "claude installed"
+  else
+    warn "Claude Code install completed but claude is still unavailable; open a new shell and check ~/.local/bin/claude"
+  fi
 }
 
 stow_dotfiles() {
@@ -759,7 +791,7 @@ install_ubuntu() {
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode)
+  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode claude)
   local tool
   for tool in "${tools[@]}"; do
     if has_cmd "$tool"; then
@@ -787,6 +819,7 @@ print_summary() {
   log "1) Open a new shell session"
   log "2) Run: gh auth login && gh auth setup-git"
   log "3) Run: opencode auth login"
+  log "4) Run: claude"
 }
 
 main() {
@@ -826,6 +859,7 @@ main() {
   install_node_with_pnpm
   install_rust_toolchain
   install_opencode
+  install_claude_code
   configure_github_cli
   stow_dotfiles
   ensure_telescope_fzf_native

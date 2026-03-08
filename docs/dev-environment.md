@@ -97,6 +97,7 @@ Install and verify:
 - `rustc`
 - `rustfmt`
 - `opencode`
+- `claude`
 
 `scripts/configure-dev.sh` is the canonical installer for these tools.
 
@@ -155,7 +156,7 @@ git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 ```
 
-## Node, pnpm, and opencode
+## Node, pnpm, opencode, and Claude Code
 
 If not installed by `scripts/configure-dev.sh`, install manually:
 
@@ -177,8 +178,20 @@ pnpm env use --global lts
 pnpm install -g opencode-ai
 ```
 
+Install Claude Code manually if needed:
+
+```sh
+curl -fsSL https://claude.ai/install.sh | bash
+```
+
 Authenticate opencode:
 
 ```sh
 opencode auth login
+```
+
+Authenticate Claude Code by starting it and following the browser prompts:
+
+```sh
+claude
 ```
