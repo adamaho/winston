@@ -660,6 +660,30 @@ install_ghostty_ubuntu() {
   fi
 }
 
+ensure_tmux_plugins() {
+  if ! has_cmd tmux; then
+    warn "tmux not found; skipping tmux plugin setup"
+    return
+  fi
+
+  local tpm_dir="$HOME/.tmux/plugins/tpm"
+
+  if [[ -d "$tpm_dir" ]]; then
+    log "TPM already installed"
+  else
+    log "Installing TPM (Tmux Plugin Manager)"
+    git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+  fi
+
+  if [[ -x "$tpm_dir/bin/install_plugins" ]]; then
+    log "Installing tmux plugins"
+    tmux start-server \; set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.tmux/plugins"
+    "$tpm_dir/bin/install_plugins"
+  else
+    warn "TPM install_plugins script not found; install plugins manually with prefix + I"
+  fi
+}
+
 ensure_telescope_fzf_native() {
   if ! has_cmd nvim; then
     warn "neovim not found; skipping telescope-fzf-native setup"
@@ -898,6 +922,7 @@ main() {
   install_claude_code
   configure_github_cli
   stow_dotfiles
+  ensure_tmux_plugins
   ensure_telescope_fzf_native
   configure_ghostty_shell
   print_summary
