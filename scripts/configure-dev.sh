@@ -34,7 +34,7 @@ Configure development tooling for supported OSes.
 Installs:
   zsh, oh-my-zsh, stow, make, ripgrep, lazygit, aws cli, ghostty,
   neovim, lua, luarocks, tmux, git, node, pnpm, rust (rustup/cargo/rustc),
-  opencode, github cli, claude code
+  opencode, github cli, claude code, counselors
 
 Supported OS:
   - macOS (Homebrew)
@@ -412,6 +412,55 @@ install_claude_code() {
   else
     warn "Claude Code install completed but claude is still unavailable; open a new shell and check ~/.local/bin/claude"
   fi
+}
+
+install_counselors() {
+  if has_cmd counselors; then
+    log "counselors already installed"
+    return
+  fi
+
+  case "$OS" in
+    macos)
+      if ! has_cmd brew; then
+        warn "Homebrew not available; skipping counselors install"
+        return
+      fi
+      log "Installing counselors via Homebrew"
+      brew install aarondfrancis/homebrew-tap/counselors
+      ;;
+    ubuntu)
+      ensure_pnpm_home_path
+      if pnpm_global_package_installed counselors; then
+        log "counselors already installed via pnpm"
+        return
+      fi
+      log "Installing counselors via pnpm"
+      pnpm add -g counselors
+      ;;
+  esac
+
+  if has_cmd counselors; then
+    log "counselors installed"
+  else
+    warn "counselors install completed but counselors is still unavailable"
+  fi
+}
+
+configure_counselors() {
+  if ! has_cmd counselors; then
+    warn "counselors not found; skipping configuration"
+    return
+  fi
+
+  local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/counselors"
+  if [[ -f "$config_dir/config.json" ]]; then
+    log "counselors already configured"
+    return
+  fi
+
+  log "Configuring counselors (auto-discovering installed AI CLIs)"
+  counselors init --auto || warn "counselors init --auto failed; run manually: counselors init"
 }
 
 stow_dotfiles() {
@@ -849,7 +898,7 @@ install_ubuntu() {
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode claude)
+  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode claude counselors)
   local tool
   for tool in "${tools[@]}"; do
     if [[ "$tool" == "opencode" ]] && pnpm_global_package_installed opencode-ai; then
@@ -880,6 +929,7 @@ print_summary() {
   log "2) Run: gh auth login && gh auth setup-git"
   log "3) Run: opencode auth login"
   log "4) Run: claude"
+  log "5) Run: counselors doctor (to verify counselors config)"
 }
 
 main() {
@@ -920,6 +970,8 @@ main() {
   install_rust_toolchain
   install_opencode
   install_claude_code
+  install_counselors
+  configure_counselors
   configure_github_cli
   stow_dotfiles
   ensure_tmux_plugins
