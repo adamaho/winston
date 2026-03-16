@@ -16,6 +16,7 @@ vim.keymap.set("n", "<leader>]d", vim.diagnostic.goto_next, vim.tbl_extend("forc
 
 -- buffers
 vim.keymap.set("n", "<leader>bd", ":bd<CR>", vim.tbl_extend("force", opts, { desc = "Close buffer" }))
+vim.keymap.set("n", "<leader>bda", ":%bd!<CR>", vim.tbl_extend("force", opts, { desc = "Force close all buffers" }))
 vim.keymap.set("n", "<S-l>", ":bn<CR>", vim.tbl_extend("force", opts, { desc = "Next buffer" }))
 vim.keymap.set("n", "<S-h>", ":bp<CR>", vim.tbl_extend("force", opts, { desc = "Previous buffer" }))
 
