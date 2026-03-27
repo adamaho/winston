@@ -34,7 +34,7 @@ Configure development tooling for supported OSes.
 Installs:
   zsh, oh-my-zsh, stow, make, ripgrep, lazygit, aws cli, ghostty,
   neovim, lua, luarocks, tmux, git, node, pnpm, rust (rustup/cargo/rustc),
-  opencode, github cli, claude code, counselors
+  opencode, codex, gemini cli, github cli, claude code, counselors
 
 Supported OS:
   - macOS (Homebrew)
@@ -388,6 +388,40 @@ install_opencode() {
 
   log "Installing opencode"
   pnpm add -g opencode-ai
+}
+
+install_codex() {
+  ensure_pnpm_home_path
+
+  if has_cmd codex; then
+    log "codex already installed"
+    return
+  fi
+
+  if pnpm_global_package_installed @openai/codex; then
+    log "codex already installed via pnpm"
+    return
+  fi
+
+  log "Installing codex"
+  pnpm i -g @openai/codex
+}
+
+install_gemini_cli() {
+  ensure_pnpm_home_path
+
+  if has_cmd gemini; then
+    log "gemini cli already installed"
+    return
+  fi
+
+  if pnpm_global_package_installed @google/gemini-cli; then
+    log "gemini cli already installed via pnpm"
+    return
+  fi
+
+  log "Installing gemini cli"
+  pnpm install -g @google/gemini-cli
 }
 
 install_claude_code() {
@@ -898,10 +932,14 @@ install_ubuntu() {
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode claude counselors)
+  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode codex gemini claude counselors)
   local tool
   for tool in "${tools[@]}"; do
     if [[ "$tool" == "opencode" ]] && pnpm_global_package_installed opencode-ai; then
+      printf '  - %-8s %s\n' "$tool" "OK"
+    elif [[ "$tool" == "codex" ]] && pnpm_global_package_installed @openai/codex; then
+      printf '  - %-8s %s\n' "$tool" "OK"
+    elif [[ "$tool" == "gemini" ]] && pnpm_global_package_installed @google/gemini-cli; then
       printf '  - %-8s %s\n' "$tool" "OK"
     elif has_cmd "$tool"; then
       printf '  - %-8s %s\n' "$tool" "OK"
@@ -928,8 +966,11 @@ print_summary() {
   log "1) Open a new shell session"
   log "2) Run: gh auth login && gh auth setup-git"
   log "3) Run: opencode auth login"
-  log "4) Run: claude"
-  log "5) Run: counselors doctor (to verify counselors config)"
+  log "4) Run: codex auth login"
+  log "5) Run: gemini"
+  log "6) Run: claude"
+  log "7) Run: counselors doctor (to verify counselors config)"
+  log "Hint: the first 'gemini' run walks you through login/setup"
 }
 
 main() {
@@ -969,6 +1010,8 @@ main() {
   install_node_with_pnpm
   install_rust_toolchain
   install_opencode
+  install_codex
+  install_gemini_cli
   install_claude_code
   install_counselors
   configure_counselors
