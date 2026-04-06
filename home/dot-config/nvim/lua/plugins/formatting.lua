@@ -8,7 +8,7 @@ return {
 			function()
 				require("conform").format({ async = true, lsp_fallback = true })
 			end,
-			mode = "",
+			mode = { "n", "v" },
 			desc = "format",
 		},
 	},
@@ -16,11 +16,14 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			rust = { "rustfmt" },
-			typescript = { "prettierd" },
-			typescriptreact = { "prettierd" },
-			html = { "prettierd" },
-			css = { "prettierd" },
-			json = { "prettierd" },
+			javascript = { "prettier" },
+			javascriptreact = { "prettier" },
+			typescript = { "prettier" },
+			typescriptreact = { "prettier" },
+			html = { "prettier" },
+			css = { "prettier" },
+			json = { "prettier" },
+			markdown = { "prettier" },
 		},
 		format_on_save = {
 			timeout_ms = 500,
