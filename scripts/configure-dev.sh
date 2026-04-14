@@ -34,7 +34,7 @@ Configure development tooling for supported OSes.
 Installs:
   zsh, oh-my-zsh, stow, make, ripgrep, lazygit, aws cli, ghostty,
   neovim, lua, luarocks, tmux, git, node, pnpm, rust (rustup/cargo/rustc),
-  opencode, codex, gemini cli, github cli, claude code, counselors
+  opencode, codex, google antigravity, github cli, claude code
 
 Supported OS:
   - macOS (Homebrew)
@@ -407,21 +407,44 @@ install_codex() {
   pnpm i -g @openai/codex
 }
 
-install_gemini_cli() {
-  ensure_pnpm_home_path
-
-  if has_cmd gemini; then
-    log "gemini cli already installed"
+install_google_antigravity() {
+  if has_cmd antigravity; then
+    log "google antigravity already installed"
     return
   fi
 
-  if pnpm_global_package_installed @google/gemini-cli; then
-    log "gemini cli already installed via pnpm"
-    return
+  if [[ "$OS" == "ubuntu" ]]; then
+    log "Installing Google Antigravity on Ubuntu"
+    run_root install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://us-central1-apt.pkg.dev/doc/repo-signing-key.gpg | run_root gpg --dearmor --yes -o /etc/apt/keyrings/antigravity-repo-key.gpg
+    run_root sh -c 'echo "deb [signed-by=/etc/apt/keyrings/antigravity-repo-key.gpg] https://us-central1-apt.pkg.dev/projects/antigravity-auto-updater-dev/ antigravity-debian main" > /etc/apt/sources.list.d/antigravity.list'
+
+    APT_UPDATED=false
+    apt_update_once
+    run_root apt install -y antigravity
+  else
+    ensure_pnpm_home_path
+    ensure_local_bin_path
+
+    if ! pnpm_global_package_installed @google/gemini-cli; then
+      log "Installing Google Antigravity CLI via @google/gemini-cli"
+      pnpm install -g @google/gemini-cli
+    else
+      log "google antigravity cli already installed via pnpm"
+    fi
+
+    if ! has_cmd antigravity && has_cmd gemini; then
+      mkdir -p "$LOCAL_BIN"
+      ln -sfn "$(command -v gemini)" "$LOCAL_BIN/antigravity"
+      log "Created antigravity command alias from gemini"
+    fi
   fi
 
-  log "Installing gemini cli"
-  pnpm install -g @google/gemini-cli
+  if has_cmd antigravity; then
+    log "google antigravity installed"
+  else
+    warn "Google Antigravity install completed but antigravity is still unavailable"
+  fi
 }
 
 install_claude_code() {
@@ -446,55 +469,6 @@ install_claude_code() {
   else
     warn "Claude Code install completed but claude is still unavailable; open a new shell and check ~/.local/bin/claude"
   fi
-}
-
-install_counselors() {
-  if has_cmd counselors; then
-    log "counselors already installed"
-    return
-  fi
-
-  case "$OS" in
-    macos)
-      if ! has_cmd brew; then
-        warn "Homebrew not available; skipping counselors install"
-        return
-      fi
-      log "Installing counselors via Homebrew"
-      brew install aarondfrancis/homebrew-tap/counselors
-      ;;
-    ubuntu)
-      ensure_pnpm_home_path
-      if pnpm_global_package_installed counselors; then
-        log "counselors already installed via pnpm"
-        return
-      fi
-      log "Installing counselors via pnpm"
-      pnpm add -g counselors
-      ;;
-  esac
-
-  if has_cmd counselors; then
-    log "counselors installed"
-  else
-    warn "counselors install completed but counselors is still unavailable"
-  fi
-}
-
-configure_counselors() {
-  if ! has_cmd counselors; then
-    warn "counselors not found; skipping configuration"
-    return
-  fi
-
-  local config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/counselors"
-  if [[ -f "$config_dir/config.json" ]]; then
-    log "counselors already configured"
-    return
-  fi
-
-  log "Configuring counselors (auto-discovering installed AI CLIs)"
-  counselors init --auto || warn "counselors init --auto failed; run manually: counselors init"
 }
 
 stow_dotfiles() {
@@ -932,14 +906,14 @@ install_ubuntu() {
 print_summary() {
   log "Installation complete. Verifying key tools:"
 
-  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode codex gemini claude counselors)
+  local tools=(zsh stow make rg lazygit aws nvim lua luarocks tmux git node pnpm rustup cargo rustc rustfmt gh opencode codex antigravity claude)
   local tool
   for tool in "${tools[@]}"; do
     if [[ "$tool" == "opencode" ]] && pnpm_global_package_installed opencode-ai; then
       printf '  - %-8s %s\n' "$tool" "OK"
     elif [[ "$tool" == "codex" ]] && pnpm_global_package_installed @openai/codex; then
       printf '  - %-8s %s\n' "$tool" "OK"
-    elif [[ "$tool" == "gemini" ]] && pnpm_global_package_installed @google/gemini-cli; then
+    elif [[ "$tool" == "antigravity" ]] && pnpm_global_package_installed @google/gemini-cli; then
       printf '  - %-8s %s\n' "$tool" "OK"
     elif has_cmd "$tool"; then
       printf '  - %-8s %s\n' "$tool" "OK"
@@ -967,10 +941,9 @@ print_summary() {
   log "2) Run: gh auth login && gh auth setup-git"
   log "3) Run: opencode auth login"
   log "4) Run: codex auth login"
-  log "5) Run: gemini"
+  log "5) Run: antigravity"
   log "6) Run: claude"
-  log "7) Run: counselors doctor (to verify counselors config)"
-  log "Hint: the first 'gemini' run walks you through login/setup"
+  log "Hint: the first 'antigravity' run walks you through login/setup"
 }
 
 main() {
@@ -1011,10 +984,8 @@ main() {
   install_rust_toolchain
   install_opencode
   install_codex
-  install_gemini_cli
+  install_google_antigravity
   install_claude_code
-  install_counselors
-  configure_counselors
   configure_github_cli
   stow_dotfiles
   ensure_tmux_plugins
