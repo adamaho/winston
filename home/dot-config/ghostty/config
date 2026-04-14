@@ -6,5 +6,4 @@ shell-integration-features = no-cursor
 
 # font
 font-family = JetBrains Mono NL
-command = /opt/homebrew/bin/zsh --login
-keybind = shift+enter=text:\x1b\r
+command = /usr/bin/zsh --login
