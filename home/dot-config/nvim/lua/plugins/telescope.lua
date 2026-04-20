@@ -9,20 +9,23 @@ return {
 		local builtin = require("telescope.builtin")
 		local telescope_config = require("telescope.config")
 
-		telescope.setup({
-			defaults = {
-				vimgrep_arguments = vim.list_extend(telescope_config.values.vimgrep_arguments, {
-					"--hidden",
-					"--glob",
-					"!**/.git/*",
-					"--glob",
-					"!pnpm-lock.yaml",
-				}),
-				file_ignore_patterns = {
-					"%.git/",
-					"node_modules/",
+			telescope.setup({
+				defaults = {
+					vimgrep_arguments = vim.list_extend(telescope_config.values.vimgrep_arguments, {
+						"--hidden",
+						"--glob",
+						"!**/.git/*",
+						"--glob",
+						"!repos/**",
+						"--glob",
+						"!pnpm-lock.yaml",
+					}),
+					file_ignore_patterns = {
+						"%.git/",
+						"node_modules/",
+						"^repos/",
+					},
 				},
-			},
 			pickers = {
 				find_files = {
 					hidden = true,
